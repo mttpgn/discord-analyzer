@@ -17,7 +17,7 @@ with open('{}/tickers.txt'.format(projroot)) as tickers:
         ' {} '.format(t.lower()), \
         ' ${} '.format(t), \
         ' {} '.format(t.title()) 
-      ] for t in rawtickers
+      ] for t in rawtickers if t != ''
                   ]
     numTickerforms = len(tickerforms[0])
 
@@ -41,6 +41,7 @@ def main():
     img = Image.open(newestfname)
     latestChatsPre = tess.image_to_string(img).split('\n')
     latestChats = [t for t in latestChatsPre if '(' not in t and ')' not in t]
+    latestChatsCleaned = ["".join( list( filter(str.isalnum, line) ) ) for line in latestChats]
     connection = None
     while(connection == None):
       try:
@@ -50,7 +51,7 @@ def main():
         time.sleep(0.01)
     lastDataBatch = []
     thisDataBatch = []
-    for chatTxt in latestChats:
+    for chatTxt in latestChatsCleaned:
       for tickerformat in tickerforms:
         for i in range(numTickerforms):
           if tickerformat[i] in chatTxt:
@@ -83,7 +84,7 @@ def insertChatData(textData, cn, symbol):
     not any(negativeStr in textData for negativeStr in negative_wordlist), \
     int(time.time()), \
     symbol \
-                                       )
+                                             )
   print(query)
   count = cursor.execute(query)
   cn.commit()
