@@ -63,6 +63,8 @@ def main():
     lastDataBatch = thisDataBatch
     time.sleep(5)
     os.remove(newestfname)
+    pyautogui.move(-30, 0)
+    pyautogui.move(30, 0)
 
 def connectToDatabase():
   conn = None
