@@ -41,7 +41,9 @@ def main():
     img = Image.open(newestfname)
     latestChatsPre = tess.image_to_string(img).split('\n')
     latestChats = [t for t in latestChatsPre if '(' not in t and ')' not in t]
-    latestChatsCleaned = ["".join( list( filter(str.isalnum, line) ) ) for line in latestChats]
+    latestChatsCleaned = ["".join( list( filter(lambda x : x in "QWERTYUIOPLKJHGFDSAZXCVBNM,.! qwertyuioplkjhgfdsazxcvbnm1234567890$%*&^", line) ) ) for line in latestChats]
+    # print('\nlatestChatsCleaned\n##################')
+    # print(latestChatsCleaned)
     connection = None
     while(connection == None):
       try:
@@ -87,7 +89,7 @@ def insertChatData(textData, cn, symbol):
     int(time.time()), \
     symbol \
                                              )
-  print(query)
+  # print(query)
   count = cursor.execute(query)
   cn.commit()
   cursor.close()

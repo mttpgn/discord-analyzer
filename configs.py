@@ -29,6 +29,7 @@ negative_wordlist = [
   'imagine', 
   'Imagine', 
   'drop', 
+  'DROP', 
   'shit',
   'SHIT',
   'not',
