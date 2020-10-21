@@ -10,7 +10,11 @@ ss_height = 1645
 
 negative_wordlist = [
   'drill', 
+  'Drill', 
+  'DRILL', 
   'puts', 
+  'Puts', 
+  'PUTS', 
   '0p', 
   '1p', 
   '2p', 
@@ -24,15 +28,29 @@ negative_wordlist = [
   'fuck', 
   'FUCK', 
   'Fuck', 
-  'DRILL', 
   'ROPE', 
   'imagine', 
   'Imagine', 
   'drop', 
+  'Drop', 
   'DROP', 
   'shit',
+  'Shit',
   'SHIT',
   'not',
-  'NOT'
+  'Not',
+  'NOT', 
+  'Garbage',
+  'garbage', 
+  'GARBAGE',
+  'trash',
+  'Trash',
+  'TRASH',
+  'TANK',
+  'tank',
+  'Tank',
+  'Dump',
+  'dump',
+  'DUMP'
 ]                                                                        
 
