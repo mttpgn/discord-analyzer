@@ -93,9 +93,9 @@ def insertChatData(textData, cn, symbol):
   count = cursor.execute(selectQuery)
   if count.fetchone() == None:
     insertQuery = """
-      INSERT INTO messages 
-      (text, positive, timestamp, ticker_symbol) 
-      VALUES 
+      INSERT INTO messages
+      (text, positive, timestamp, ticker_symbol)
+      VALUES
       ("{}", "{}", {}, "{}");
                   """.format(\
         textData, \
