@@ -51,6 +51,9 @@ negative_wordlist = [
   'Tank',
   'Dump',
   'dump',
-  'DUMP'
+  'DUMP',
+  'Sad',
+  'sad',
+  'SAD'
 ]                                                                        
 

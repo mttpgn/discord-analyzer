@@ -83,17 +83,29 @@ def connectToDatabase():
 
 def insertChatData(textData, cn, symbol):
   cursor = cn.cursor()
-  query = """INSERT INTO messages 
-             (text, positive, timestamp, ticker_symbol) 
-             VALUES 
-             ("{}", "{}", {}, "{}")""".format(
-    textData, \
-    not any(negativeStr in textData for negativeStr in negative_wordlist), \
-    int(time.time()), \
-    symbol \
-                                             )
+  selectQuery = """
+    SELECT text FROM messages where text='{}' AND timestamp > {};
+                """.format(\
+      textData, \
+      int(time.time()) - 300 \
+                          )
   # print(query)
-  count = cursor.execute(query)
+  count = cursor.execute(selectQuery)
+  if count.fetchone() == None:
+    insertQuery = """
+      INSERT INTO messages 
+      (text, positive, timestamp, ticker_symbol) 
+      VALUES 
+      ("{}", "{}", {}, "{}");
+                  """.format(\
+        textData, \
+        not any(negativeStr in textData for negativeStr in negative_wordlist), \
+        int(time.time()), \
+        symbol \
+                            )
+    _ = cursor.execute(insertQuery)
+  else:
+    print("we already stored this msg")
   cn.commit()
   cursor.close()
 
