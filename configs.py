@@ -1,3 +1,5 @@
+# import logging
+
 dbname = 'sentiment.sqlite'
 projroot = '/Users/mttpgn/src/wsbdiscordsentiment'
 ss_location = '{}/screenshots'.format(projroot)
@@ -7,7 +9,7 @@ ss_top = 220
 ss_left = 820
 ss_width = 1985
 ss_height = 1645
-
+# logging.basicConfig('/var/log/wsbdiscordsentiment/python.log')
 negative_wordlist = [
   'drill', 
   'Drill', 
