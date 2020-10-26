@@ -10,6 +10,8 @@ import re
 from PIL import Image
 from configs import *
 
+ALL_HOURS_FLAG = True
+
 with open('{}/tickers.txt'.format(projroot)) as tickers:
     rawtickers = tickers.read().split('\n')
     regexfirstpart = '( |^|\$)'
@@ -20,8 +22,7 @@ with open('{}/tickers.txt'.format(projroot)) as tickers:
 
 def main():
     while True:
-    # if datetime.now().hour in list(range(9,16)):
-      if True:
+      if datetime.now().hour in list(range(9,16)) or ALL_HOURS_FLAG:
           newestfname = datetime.now().strftime(\
             '{}/%Y%m%d%H%m%S{}'.format(\
             ss_location, \
