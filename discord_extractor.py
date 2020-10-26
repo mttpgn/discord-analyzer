@@ -12,25 +12,11 @@ from configs import *
 
 with open('{}/tickers.txt'.format(projroot)) as tickers:
     rawtickers = tickers.read().split('\n')
-    tickerregexes = [ \
-      [ '( |^|\$){}( |$|,|\.|!|\?)'.format(t_) for t_ in [ \
-        t, \
-        t.lower(), \
-        t.title() \
-                                                 ] \
-      ] for t in rawtickers if t != '' \
-                    ]
-    tickerforms = [ \
-      [ \
-        ' {} '.format(t), \
-        ' {} '.format(t.lower()), \
-        '${} '.format(t), \
-        ' {} '.format(t.title()) 
-      ] for t in rawtickers if t != ''
-                  ]
-    # numTickerforms = len(tickerforms[0])
+    regexfirstpart = '( |^|\$)'
+    regexlastpart = '( |$|,|\.|!|\?)'
+    tickerregexes = \
+      [ (re.compile('{}{}{}'.format(regexfirstpart, t, regexlastpart), flags=re.IGNORECASE), t) for t in rawtickers if t != '' ]
     # print(tickerregexes)
-    numTickerforms = len(tickerregexes[0])
 
 def main():
     while True:
@@ -68,15 +54,11 @@ def main():
                   print("Failed to connect: {} ... retrying".format(e))
                   time.sleep(0.01)
           for chatTxt in latestChatsCleaned:
-        # for tickerformat in tickerforms:
-              for tickerre in tickerregexes:
+              for tickerre_tup in tickerregexes:
                   if len(chatTxt) > 4:
-                      if re.search(tickerre[0], chatTxt) is not None or \
-                        re.search(tickerre[1], chatTxt) is not None or \
-                        re.search(tickerre[2], chatTxt) is not None:
-                          print(tickerre[0])
-                          print(chatTxt)
-                          insertChatData(chatTxt, connection, tickerre[0][9:-12])
+                      if tickerre_tup[0].search(chatTxt) is not None:
+                          print('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
+                          insertChatData(chatTxt, connection, tickerre_tup[1])
           connection.close()
           time.sleep(5)
           os.remove(newestfname)
