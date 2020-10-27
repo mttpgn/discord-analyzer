@@ -17,12 +17,12 @@ with open('{}/tickers.txt'.format(projroot)) as tickers:
     regexfirstpart = '( |^|\$)'
     regexlastpart = '( |$|,|\.|!|\?)'
     tickerregexes = \
-      [ (re.compile(
-          '{}{}{}'.format(
-            regexfirstpart, 
-            t, 
-            regexlastpart), 
-          flags=re.IGNORECASE), 
+      [ (re.compile(\
+          '{}{}{}'.format(\
+            regexfirstpart, \
+            t, \
+            regexlastpart), \
+          flags=re.IGNORECASE), \
         t) for t in rawtickers if t != '' ]
     # print(tickerregexes)
 
@@ -70,7 +70,7 @@ def main():
                           print('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
                           insertChatData(chatTxt, connection, tickerre_tup[1])
           connection.close()
-          time.sleep(5)
+          time.sleep(2)
           os.remove(newestfname)
           pyautogui.move(-30, 0)
           pyautogui.move(30, 0)
