@@ -70,7 +70,7 @@ def main():
                           print('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
                           insertChatData(chatTxt, connection, tickerre_tup[1])
           connection.close()
-          time.sleep(2)
+          time.sleep(1)
           os.remove(newestfname)
           pyautogui.move(-30, 0)
           pyautogui.move(30, 0)
@@ -82,8 +82,9 @@ def coherencyCheck(phrase):
     if len(phrase) < 9:
         return False
     for phrasew in phrase.split(' '):
-        if phrasew.lower() in words:
-            return True
+        if (phrasew) > 2:
+            if phrasew.lower() in words:
+                return True
     return False
 
 def connectToDatabase():
