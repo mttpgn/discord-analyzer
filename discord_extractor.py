@@ -82,7 +82,7 @@ def coherencyCheck(phrase):
     if len(phrase) < 9:
         return False
     for phrasew in phrase.split(' '):
-        if (phrasew) > 2:
+        if len(phrasew) > 2:
             if phrasew.lower() in words:
                 return True
     return False
