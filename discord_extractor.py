@@ -26,8 +26,8 @@ with open('{}/tickers.txt'.format(projroot)) as tickers:
         t) for t in rawtickers if t != '' ]
     # print(tickerregexes)
 
-with open(dictionary_location) as wordsf:
-    words = wordsf.read().split('\n')[10:]
+# with open(dictionary_location) as wordsf:
+#     words = wordsf.read().split('\n')[10:]
 
 def main():
     while True:
@@ -70,10 +70,11 @@ def main():
                           print('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
                           insertChatData(chatTxt, connection, tickerre_tup[1])
           connection.close()
-          time.sleep(1)
+          # time.sleep(1)
           os.remove(newestfname)
           pyautogui.move(-30, 0)
           pyautogui.move(30, 0)
+          print("end of loop")
       else:
           print("Sentiment analysis not running outside market hours")
           time.sleep(3600)
@@ -83,8 +84,7 @@ def coherencyCheck(phrase):
         return False
     for phrasew in phrase.split(' '):
         if len(phrasew) > 2:
-            if phrasew.lower() in words:
-                return True
+            return True
     return False
 
 def connectToDatabase():
