@@ -39,9 +39,6 @@ negative_wordlist = [
   'shit',
   'Shit',
   'SHIT',
-  'not',
-  'Not',
-  'NOT', 
   'Garbage',
   'garbage', 
   'GARBAGE',
@@ -58,4 +55,4 @@ negative_wordlist = [
   'sad',
   'SAD'
 ]                                                                        
-
+dictionary_location = '/usr/share/dict/words'

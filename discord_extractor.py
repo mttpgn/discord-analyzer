@@ -17,8 +17,17 @@ with open('{}/tickers.txt'.format(projroot)) as tickers:
     regexfirstpart = '( |^|\$)'
     regexlastpart = '( |$|,|\.|!|\?)'
     tickerregexes = \
-      [ (re.compile('{}{}{}'.format(regexfirstpart, t, regexlastpart), flags=re.IGNORECASE), t) for t in rawtickers if t != '' ]
+      [ (re.compile(
+          '{}{}{}'.format(
+            regexfirstpart, 
+            t, 
+            regexlastpart), 
+          flags=re.IGNORECASE), 
+        t) for t in rawtickers if t != '' ]
     # print(tickerregexes)
+
+with open(dictionary_location) as wordsf:
+    words = wordsf.read().split('\n')[10:]
 
 def main():
     while True:
@@ -56,7 +65,7 @@ def main():
                   time.sleep(0.01)
           for chatTxt in latestChatsCleaned:
               for tickerre_tup in tickerregexes:
-                  if len(chatTxt) > 4:
+                  if coherencyCheck(chatTxt):
                       if tickerre_tup[0].search(chatTxt) is not None:
                           print('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
                           insertChatData(chatTxt, connection, tickerre_tup[1])
@@ -68,6 +77,14 @@ def main():
       else:
           print("Sentiment analysis not running outside market hours")
           time.sleep(3600)
+
+def coherencyCheck(phrase):
+    if len(phrase) < 9:
+        return False
+    for phrasew in phrase.split(' '):
+        if phrasew.lower() in words:
+            return True
+    return False
 
 def connectToDatabase():
     conn = None
@@ -100,7 +117,7 @@ def insertChatData(textData, cn, symbol):
           not any(negativeStr in textData for negativeStr in negative_wordlist), \
           int(time.time()), \
           symbol \
-                              )
+                                )
         _ = cursor.execute(insertQuery)
     else:
         print("we already stored this msg")
