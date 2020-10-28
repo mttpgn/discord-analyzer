@@ -61,8 +61,11 @@ negative_wordlist = [
 
 dictionary_location = '/usr/share/dict/words'
 
-pg_db_name = 'sentiment-db'
-pg_db_host = 'sentiment-db.cogzqkcq8zkt.us-east-2.rds.amazonaws.com'
+pg_db_name = 'postgres'
+pg_db_instance = 'sentiment-db'
+pg_db_hostname = 'sentiment-db.cogzqkcq8zkt.us-east-2.rds.amazonaws.com'
 pg_db_port = 5432
 pg_db_username = 'postgres'
 pg_db_password = 'q6juzlW4GBoKPpyilvPh'
+
+pg_tableName = 'wsb_stocks_and_options'

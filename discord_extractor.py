@@ -27,6 +27,8 @@ with open('{}/tickers.txt'.format(projroot)) as tickers:
         t) for t in rawtickers if t != '' ]
     # print(tickerregexes)
 
+# dbconnection = connectToDatabase_sqlite()
+dbconnection = connectToDatabase_pg()
 
 def main():
     while True:
@@ -53,11 +55,11 @@ def main():
               lambda x : x in \
                 "QWERTYUIOPLKJHGFDSAZXCVBNM,.! qwertyuioplkjhgfdsazxcvbnm1234567890$%*&^", 
               line) ) ) for line in latestChats ]
-            connection = None
+            connection = dbconnection
             while(connection is None):
                 try:
-                    # connection = connectToDatabase_pg()
-                    connection = connectToDatabase_sqlite()
+                    connection = connectToDatabase_pg()
+                    # connection = connectToDatabase_sqlite()
                 except Error as e:
                     print("Failed to connect: {} ... retrying".format(e))
                     time.sleep(0.01)
@@ -66,9 +68,9 @@ def main():
                     if coherencyCheck(chatTxt):
                         if tickerre_tup[0].search(chatTxt) is not None:
                             print('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
-                            insertChatData_sqlite(chatTxt, connection, tickerre_tup[1])
-                            # insertChatData_pg(chatTxt, connection, tickerre_tup[1])
-            connection.close()
+                            # insertChatData_sqlite(chatTxt, connection, tickerre_tup[1])
+                            insertChatData_pg(chatTxt, connection, tickerre_tup[1])
+            # connection.close()
             os.remove(newestfname)
             pyautogui.move(-30, 0)
             pyautogui.move(30, 0)
