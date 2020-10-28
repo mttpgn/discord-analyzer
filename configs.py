@@ -16,7 +16,10 @@ negative_wordlist = [
   'DRILL', 
   'puts', 
   'Puts', 
-  'PUTS', 
+  'PUTS',
+  'PUT',
+  'Put',
+  'put'
   '0p', 
   '1p', 
   '2p', 
@@ -55,4 +58,11 @@ negative_wordlist = [
   'sad',
   'SAD'
 ]                                                                        
+
 dictionary_location = '/usr/share/dict/words'
+
+pg_db_name = 'sentiment-db'
+pg_db_host = 'sentiment-db.cogzqkcq8zkt.us-east-2.rds.amazonaws.com'
+pg_db_port = 5432
+pg_db_username = 'postgres'
+pg_db_password = 'q6juzlW4GBoKPpyilvPh'
