@@ -2,13 +2,20 @@
 
 dbname = 'sentiment.sqlite'
 projroot = '/Users/mttpgn/src/wsbdiscordsentiment'
-ss_location = '{}/screenshots'.format(projroot)
+pi_projroot = '/home/pi/discord-sentiment-analyzer'
+ss_location = '{}/screenshots'.format(pi_projroot)
 db_location = '{}/{}'.format(projroot, dbname)
 exten = '.png'
 ss_top = 220
 ss_left = 820
 ss_width = 1985
 ss_height = 1645
+
+ss_pi_top = 212
+ss_pi_left = 374
+ss_pi_width = 1045 - ss_pi_left
+ss_pi_height = 644 - ss_pi_top
+
 # logging.basicConfig('/var/log/wsbdiscordsentiment/python.log')
 negative_wordlist = [
   'drill', 

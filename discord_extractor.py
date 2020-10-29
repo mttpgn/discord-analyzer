@@ -11,9 +11,9 @@ from configs import *
 from sqlite_sentiment_db import *
 from pg_sentiment_db import *
 
-ALL_HOURS_FLAG = True
+ALL_HOURS_FLAG = False
 
-with open('{}/tickers.txt'.format(projroot)) as tickers:
+with open('{}/tickers.txt'.format(pi_projroot)) as tickers:
     rawtickers = tickers.read().split('\n')
     regexfirstpart = '( |^|\$)'
     regexlastpart = '( |$|,|\.|!|\?)'
@@ -42,10 +42,10 @@ def main():
             pyautogui.screenshot(\
               newestfname, \
               region=(\
-                ss_left, \
-                ss_top, \
-                ss_width, \
-                ss_height
+                ss_pi_left, \
+                ss_pi_top, \
+                ss_pi_width, \
+                ss_pi_height
                      )
                                 )
             img = Image.open(newestfname)
