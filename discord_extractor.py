@@ -6,12 +6,15 @@ import pyautogui
 import pytesseract as tess
 import os
 import re
+import configparser
 from PIL import Image
 from configs import *
 from sqlite_sentiment_db import *
 from pg_sentiment_db import *
 
 ALL_HOURS_FLAG = False
+
+config = configparser.ConfigParser()
 
 with open('{}/tickers.txt'.format(pi_projroot)) as tickers:
     rawtickers = tickers.read().split('\n')
