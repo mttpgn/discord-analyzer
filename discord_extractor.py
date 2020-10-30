@@ -11,8 +11,7 @@ from PIL import Image
 from configs import *
 from sqlite_sentiment_db import *
 from pg_sentiment_db import *
-
-ALL_HOURS_FLAG = False
+from feelings_list import negative_wordlist
 
 config = configparser.ConfigParser()
 
