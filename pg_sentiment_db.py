@@ -3,7 +3,7 @@ import socket
 import configparser
 from feelings_list import negative_wordlist
 
-source = 'laptop'
+source = 'ec2'
 
 conf = configparser.ConfigParser()
 conf.read('{}.ini'.format(source))

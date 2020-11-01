@@ -10,7 +10,7 @@ import configparser
 from PIL import Image
 from pg_sentiment_db import *
 
-source = 'laptop'
+source = 'ec2'
 conf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
 conf.read('{}.ini'.format(source))
 
