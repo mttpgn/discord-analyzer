@@ -1,15 +1,21 @@
 import psycopg2
 import socket
-from configs import *
+import configparser
+from feelings_list import negative_wordlist
 
-pg_db_IPaddress = socket.gethostbyname(pg_db_hostname)
+source = 'laptop'
+
+conf = configparser.ConfigParser()
+conf.read('{}.ini'.format(source))
+
+pg_db_IPaddress = socket.gethostbyname(conf['POSTGRES_DATABASE']['pg_db_hostname'])
 
 def connectToDatabase_pg():
     conn = psycopg2.connect(
-      port=pg_db_port, 
-      dbname=pg_db_name, 
-      user=pg_db_username, 
-      password=pg_db_password, 
+      port=conf['POSTGRES_DATABASE']['pg_db_port'], 
+      dbname=conf['POSTGRES_DATABASE']['pg_db_name'], 
+      user=conf['POSTGRES_DATABASE']['pg_db_username'], 
+      password=conf['POSTGRES_DATABASE']['pg_db_password'], 
       host=pg_db_IPaddress
       # host=pg_db_hostname
                            )
@@ -24,7 +30,7 @@ def insertChatData_pg(textData, cn, symbol):
       FROM {} 
       WHERE timestamp >= NOW() - INTERVAL '5 minutes'
       AND text='{}';
-                  """.format(pg_tableName, textData)
+                  """.format(conf['CHANNEL']['pg_tableName'], textData)
     print(selectQuery)
     cursor.execute(selectQuery)
     _ = cursor.fetchone()
@@ -39,7 +45,7 @@ def insertChatData_pg(textData, cn, symbol):
           VALUES
           ('{}', '{}', NOW(), '{}');
                       """.format(
-            pg_tableName,
+            conf['CHANNEL']['pg_tableName'],
             textData.strip(),
             positivity,
             symbol

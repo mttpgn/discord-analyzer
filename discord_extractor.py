@@ -8,14 +8,13 @@ import os
 import re
 import configparser
 from PIL import Image
-from configs import *
-from sqlite_sentiment_db import *
 from pg_sentiment_db import *
-from feelings_list import negative_wordlist
 
-config = configparser.ConfigParser()
+source = 'laptop'
+conf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+conf.read('{}.ini'.format(source))
 
-with open('{}/tickers.txt'.format(pi_projroot)) as tickers:
+with open('{}/tickers.txt'.format(conf['ENVIRONMENT']['projroot'])) as tickers:
     rawtickers = tickers.read().split('\n')
     regexfirstpart = '( |^|\$)'
     regexlastpart = '( |$|,|\.|!|\?)'
@@ -34,22 +33,21 @@ dbconnection = connectToDatabase_pg()
 
 def main():
     while True:
-        if datetime.now().hour in list(range(8,16)) or ALL_HOURS_FLAG:
+        if datetime.now().hour in list(range(\
+          int(conf['COMMON']['hour_begin']), \
+          int(conf['COMMON']['hour_finish']))) or conf['COMMON']['all_hours_flag']:
             newestfname = datetime.now().strftime(\
               '{}/%Y%m%d%H%m%S{}'.format(\
-              ss_location, \
-              exten
-                                        )
-                                                 )
+              conf['ENVIRONMENT']['ss_location'], \
+              conf['COMMON']['exten'] )        )
             pyautogui.screenshot(\
               newestfname, \
               region=(\
-                ss_pi_left, \
-                ss_pi_top, \
-                ss_pi_width, \
-                ss_pi_height
-                     )
-                                )
+                conf['DESKTOP']['ss_left'], \
+                conf['DESKTOP']['ss_top'], \
+                conf['DESKTOP']['ss_width'], \
+                conf['DESKTOP']['ss_height']
+                     )          )
             img = Image.open(newestfname)
             latestChatsPre = tess.image_to_string(img).split('\n')
             latestChats = [t for t in latestChatsPre if '(' not in t and ')' not in t]
