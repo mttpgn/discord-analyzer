@@ -10,6 +10,8 @@ import configparser
 from PIL import Image
 from pg_sentiment_db import *
 
+pyautogui.FAILSAFE = False
+
 source = 'ec2'
 conf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
 conf.read('{}.ini'.format(source))
@@ -72,8 +74,8 @@ def main():
                             insertChatData_pg(chatTxt, connection, tickerre_tup[1])
             # connection.close()
             os.remove(newestfname)
-            pyautogui.move(-30, 0)
-            pyautogui.move(30, 0)
+            pyautogui.moveTo(pyautogui.Point(x=900, y=90))
+            pyautogui.move(5, -5)
         else:
             print("Sentiment analysis not running outside market hours")
             time.sleep(3600)
