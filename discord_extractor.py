@@ -12,7 +12,7 @@ from pg_sentiment_db import *
 
 pyautogui.FAILSAFE = False
 
-source = 'ec2'
+source = 'wsb_so_ec2'
 conf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
 conf.read('{}.ini'.format(source))
 

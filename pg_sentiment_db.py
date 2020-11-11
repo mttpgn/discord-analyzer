@@ -3,7 +3,7 @@ import socket
 import configparser
 from feelings_list import negative_wordlist
 
-source = 'ec2'
+source = 'wsb_so_ec2'
 
 conf = configparser.ConfigParser()
 conf.read('{}.ini'.format(source))
