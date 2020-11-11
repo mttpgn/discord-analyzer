@@ -28,7 +28,7 @@ def insertChatData_pg(textData, cn, symbol):
       SELECT 
         text 
       FROM {} 
-      WHERE timestamp >= NOW() - INTERVAL '5 minutes'
+      WHERE timestamp >= NOW() - INTERVAL '15 minutes'
       AND text='{}';
                   """.format(conf['CHANNEL']['pg_tableName'], textData)
     print(selectQuery)
@@ -41,14 +41,16 @@ def insertChatData_pg(textData, cn, symbol):
             positivity = 'T'
         insertQuery = """
           INSERT INTO {}
-          (text, positive, timestamp, ticker_symbol)
+          (text, positive, timestamp, ticker_symbol, discord_server, discord_channel)
           VALUES
-          ('{}', '{}', NOW(), '{}');
+          ('{}', '{}', NOW(), '{}', '{}', '{}');
                       """.format(
             conf['CHANNEL']['pg_tableName'],
             textData.strip(),
             positivity,
-            symbol
+            symbol,
+            conf['CHANNEL']['discord_name'],
+            conf['CHANNEL']['channel_name']
                                 )
         print(insertQuery)
         _ = cursor.execute(insertQuery)
