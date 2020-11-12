@@ -69,7 +69,7 @@ def main():
           currhr, \
           str(list(range(beginhr, endhr))), \
           everyhr)  )
-        if currhr in list(range(beginhr, endhr)) or everyhr:
+        if (currhr in list(range(beginhr, endhr)) or everyhr):
             newestfname = datetime.now().strftime(\
               '{}/%Y%m%d%H%m%S{}'.format(\
               conf['ENVIRONMENT']['ss_location'], \
