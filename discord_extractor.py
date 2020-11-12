@@ -61,6 +61,7 @@ def main():
     while True:
         currhr = datetime.now().hour
         currmin = datetime.now().minute
+        currsec = datetime.now().second
         beginhr = int(conf['COMMON']['hour_begin'])
         endhr = int(conf['COMMON']['hour_finish'])
         everyhr = conf['COMMON']['all_hours_flag']
@@ -89,22 +90,24 @@ def main():
               lambda x : x in \
                 "QWERTYUIOPLKJHGFDSAZXCVBNM,.! qwertyuioplkjhgfdsazxcvbnm1234567890$%*&^", 
               line) ) ) for line in latestChats ]
-            connection = dbconnection
+            if currmin in (29, 59) and currsec in (0, 1):
+                logger.info("Postgres session refresh scheduled for NOW")
+                connection.close()
+            else:
+                connection = dbconnection
             while(connection is None):
                 try:
                     logger.warn("Not database connection found. Making new connection.")
                     connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
-                    # connection = connectToDatabase_sqlite()
                 except Error as e:
                     logger.error("Failed to connect: {} ... retrying".format(e))
-                    time.sleep(0.01)
+                    time.sleep(0.1)
             for chatTxt in latestChatsCleaned:
                 for tickerre_tup in tickerregexes:
                     if coherencyCheck(chatTxt, logger):
                         if tickerre_tup[0].search(chatTxt) is not None:
                             logger.info('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
                             pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
-            # connection.close()
             logger.debug("Deleting screenshot file")
             os.remove(newestfname)
             logger.debug("Jiggling mouse for keepalive")
