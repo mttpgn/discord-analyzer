@@ -11,6 +11,7 @@ from PIL import Image
 import pg_sentiment_db
 import sys
 import logging
+import distutils.util
 
 pyautogui.FAILSAFE = False
 
@@ -64,7 +65,7 @@ def main():
         currsec = datetime.now().second
         beginhr = int(conf['COMMON']['hour_begin'])
         endhr = int(conf['COMMON']['hour_finish'])
-        everyhr = conf['COMMON']['all_hours_flag']
+        everyhr = distutils.util.strtobool(conf['COMMON']['all_hours_flag'])
         logger.info("Checking whether current hour {} is in {} or the all hours flag ({}) is set.".format(
           currhr, \
           str(list(range(beginhr, endhr))), \
