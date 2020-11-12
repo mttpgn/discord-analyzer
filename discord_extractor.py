@@ -116,7 +116,7 @@ def main():
             pyautogui.move(5, -5)
         else:
             logger.info("Sentiment analysis not running outside market hours")
-            time.sleep(3600)
+            time.sleep(30)
 
 def coherencyCheck(phrase, log):
     if len(phrase) < 9:
