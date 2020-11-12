@@ -1,28 +1,21 @@
 import psycopg2
 import socket
-import configparser
 from feelings_list import negative_wordlist
 
-source = 'wsb_so_ec2'
-
-conf = configparser.ConfigParser()
-conf.read('{}.ini'.format(source))
-
-pg_db_IPaddress = socket.gethostbyname(conf['POSTGRES_DATABASE']['pg_db_hostname'])
-
-def connectToDatabase_pg():
+def connectToDatabase_pg(cfg):
+    pg_db_IPaddress = socket.gethostbyname(cfg['POSTGRES_DATABASE']['pg_db_hostname'])
     conn = psycopg2.connect(
-      port=conf['POSTGRES_DATABASE']['pg_db_port'], 
-      dbname=conf['POSTGRES_DATABASE']['pg_db_name'], 
-      user=conf['POSTGRES_DATABASE']['pg_db_username'], 
-      password=conf['POSTGRES_DATABASE']['pg_db_password'], 
+      port=cfg['POSTGRES_DATABASE']['pg_db_port'],
+      dbname=cfg['POSTGRES_DATABASE']['pg_db_name'],
+      user=cfg['POSTGRES_DATABASE']['pg_db_username'],
+      password=cfg['POSTGRES_DATABASE']['pg_db_password'],
       host=pg_db_IPaddress
       # host=pg_db_hostname
                            )
     print("Connection established. Postgres v. {}".format(conn.server_version))
     return conn
 
-def insertChatData_pg(textData, cn, symbol):
+def insertChatData_pg(textData, cn, symbol, cfg):
     cursor = cn.cursor()
     selectQuery = """
       SELECT 
@@ -30,7 +23,7 @@ def insertChatData_pg(textData, cn, symbol):
       FROM {} 
       WHERE timestamp >= NOW() - INTERVAL '15 minutes'
       AND text='{}';
-                  """.format(conf['CHANNEL']['pg_tableName'], textData)
+                  """.format(cfg['CHANNEL']['pg_tableName'], textData)
     print(selectQuery)
     cursor.execute(selectQuery)
     _ = cursor.fetchone()
@@ -45,12 +38,12 @@ def insertChatData_pg(textData, cn, symbol):
           VALUES
           ('{}', '{}', NOW(), '{}', '{}', '{}');
                       """.format(
-            conf['CHANNEL']['pg_tableName'],
+            cfg['CHANNEL']['pg_tableName'],
             textData.strip(),
             positivity,
             symbol,
-            conf['CHANNEL']['discord_name'],
-            conf['CHANNEL']['channel_name']
+            cfg['CHANNEL']['discord_name'],
+            cfg['CHANNEL']['channel_name']
                                 )
         print(insertQuery)
         _ = cursor.execute(insertQuery)

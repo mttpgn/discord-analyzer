@@ -8,32 +8,38 @@ import os
 import re
 import configparser
 from PIL import Image
-from pg_sentiment_db import *
+import pg_sentiment_db
+import sys
 
 pyautogui.FAILSAFE = False
 
-source = 'wsb_so_ec2'
-conf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-conf.read('{}.ini'.format(source))
-
-with open('{}/tickers.txt'.format(conf['ENVIRONMENT']['projroot'])) as tickers:
-    rawtickers = tickers.read().split('\n')
-    regexfirstpart = '( |^|\$)'
-    regexlastpart = '( |$|,|\.|!|\?)'
-    tickerregexes = \
-      [ (re.compile(\
-          '{}{}{}'.format(\
-            regexfirstpart, \
-            t, \
-            regexlastpart), \
-          flags=re.IGNORECASE), \
-        t) for t in rawtickers if t != '' ]
-    # print(tickerregexes)
-
-# dbconnection = connectToDatabase_sqlite()
-dbconnection = connectToDatabase_pg()
+def takeConfigs():
+    if len(sys.argv) < 2:
+        print("Provide the config file as the 1st CLI argument please.")
+        exit()
+    conffile = sys.argv[1]
+    if not os.path.exists(conffile):
+        print("Not a valid filepath: {}.".printf(conffile))
+        exit()
+    cf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+    cf.read(conffile)
+    return cf
 
 def main():
+    conf = takeConfigs()
+    with open('{}/tickers.txt'.format(conf['ENVIRONMENT']['projroot'])) as tickers:
+        rawtickers = tickers.read().split('\n')
+        regexfirstpart = '( |^|\$)'
+        regexlastpart = '( |$|,|\.|!|\?)'
+        tickerregexes = \
+          [ (re.compile(\
+              '{}{}{}'.format(\
+                regexfirstpart, \
+                t, \
+                regexlastpart), \
+              flags=re.IGNORECASE), \
+            t) for t in rawtickers if t != '' ]
+    dbconnection = pg_sentiment_db.connectToDatabase_pg(conf)
     while True:
         if datetime.now().hour in list(range(\
           int(conf['COMMON']['hour_begin']), \
@@ -60,7 +66,7 @@ def main():
             connection = dbconnection
             while(connection is None):
                 try:
-                    connection = connectToDatabase_pg()
+                    connection = pg_sentiment_db.connectToDatabase_pg(conf)
                     # connection = connectToDatabase_sqlite()
                 except Error as e:
                     print("Failed to connect: {} ... retrying".format(e))
@@ -71,7 +77,7 @@ def main():
                         if tickerre_tup[0].search(chatTxt) is not None:
                             print('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
                             # insertChatData_sqlite(chatTxt, connection, tickerre_tup[1])
-                            insertChatData_pg(chatTxt, connection, tickerre_tup[1])
+                            pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf)
             # connection.close()
             os.remove(newestfname)
             pyautogui.moveTo(pyautogui.Point(x=900, y=90))
