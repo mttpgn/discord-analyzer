@@ -1,8 +1,9 @@
 import psycopg2
 import socket
+import logging
 from feelings_list import negative_wordlist
 
-def connectToDatabase_pg(cfg):
+def connectToDatabase_pg(cfg, log):
     pg_db_IPaddress = socket.gethostbyname(cfg['POSTGRES_DATABASE']['pg_db_hostname'])
     conn = psycopg2.connect(
       port=cfg['POSTGRES_DATABASE']['pg_db_port'],
@@ -12,10 +13,10 @@ def connectToDatabase_pg(cfg):
       host=pg_db_IPaddress
       # host=pg_db_hostname
                            )
-    print("Connection established. Postgres v. {}".format(conn.server_version))
+    log.info("Connection established. Postgres v. {}".format(conn.server_version))
     return conn
 
-def insertChatData_pg(textData, cn, symbol, cfg):
+def insertChatData_pg(textData, cn, symbol, cfg, log):
     cursor = cn.cursor()
     selectQuery = """
       SELECT 
@@ -24,7 +25,7 @@ def insertChatData_pg(textData, cn, symbol, cfg):
       WHERE timestamp >= NOW() - INTERVAL '15 minutes'
       AND text='{}';
                   """.format(cfg['CHANNEL']['pg_tableName'], textData)
-    print(selectQuery)
+    log.info(selectQuery)
     cursor.execute(selectQuery)
     _ = cursor.fetchone()
     if cursor.rowcount < 1:
@@ -45,10 +46,10 @@ def insertChatData_pg(textData, cn, symbol, cfg):
             cfg['CHANNEL']['discord_name'],
             cfg['CHANNEL']['channel_name']
                                 )
-        print(insertQuery)
+        log.info(insertQuery)
         _ = cursor.execute(insertQuery)
     else:
-        print("We already stored this msg")
+        log.info("We already stored this msg")
     cn.commit()
     cursor.close()
 

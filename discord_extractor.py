@@ -10,8 +10,10 @@ import configparser
 from PIL import Image
 import pg_sentiment_db
 import sys
+import logging
 
 pyautogui.FAILSAFE = False
+
 
 def takeConfigs():
     if len(sys.argv) < 2:
@@ -23,10 +25,18 @@ def takeConfigs():
         exit()
     cf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
     cf.read(conffile)
+    logging.debug("Loaded config file {}".format(conffile))
     return cf
 
 def main():
     conf = takeConfigs()
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    fh = logging.FileHandler(conf['ENVIRONMENT']['logfile'])
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s %(message)s')
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
     with open('{}/tickers.txt'.format(conf['ENVIRONMENT']['projroot'])) as tickers:
         rawtickers = tickers.read().split('\n')
         regexfirstpart = '( |^|\$)'
@@ -39,11 +49,18 @@ def main():
                 regexlastpart), \
               flags=re.IGNORECASE), \
             t) for t in rawtickers if t != '' ]
-    dbconnection = pg_sentiment_db.connectToDatabase_pg(conf)
+    logger.info("Connecting to database")
+    dbconnection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
     while True:
-        if datetime.now().hour in list(range(\
-          int(conf['COMMON']['hour_begin']), \
-          int(conf['COMMON']['hour_finish']))) or conf['COMMON']['all_hours_flag']:
+        currhr = datetime.now().hour
+        beginhr = int(conf['COMMON']['hour_begin'])
+        endhr = int(conf['COMMON']['hour_finish'])
+        everyhr = conf['COMMON']['all_hours_flag']
+        logger.info("Checking whether current hour {} is in {} or the all hours flag ({}) is set.".format(
+          currhr, \
+          str(list(range(beginhr, endhr))), \
+          everyhr)  )
+        if currhr in list(range(beginhr, endhr)) or everyhr:
             newestfname = datetime.now().strftime(\
               '{}/%Y%m%d%H%m%S{}'.format(\
               conf['ENVIRONMENT']['ss_location'], \
@@ -56,6 +73,7 @@ def main():
                 conf['DESKTOP']['ss_width'], \
                 conf['DESKTOP']['ss_height']
                      )          )
+            logger.debug("Saved screenshot to {}".format(newestfname))
             img = Image.open(newestfname)
             latestChatsPre = tess.image_to_string(img).split('\n')
             latestChats = [t for t in latestChatsPre if '(' not in t and ')' not in t]
@@ -66,32 +84,35 @@ def main():
             connection = dbconnection
             while(connection is None):
                 try:
-                    connection = pg_sentiment_db.connectToDatabase_pg(conf)
+                    logger.warn("Not database connection found. Making new connection.")
+                    connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
                     # connection = connectToDatabase_sqlite()
                 except Error as e:
-                    print("Failed to connect: {} ... retrying".format(e))
+                    logger.error("Failed to connect: {} ... retrying".format(e))
                     time.sleep(0.01)
             for chatTxt in latestChatsCleaned:
                 for tickerre_tup in tickerregexes:
-                    if coherencyCheck(chatTxt):
+                    if coherencyCheck(chatTxt, logger):
                         if tickerre_tup[0].search(chatTxt) is not None:
-                            print('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
-                            # insertChatData_sqlite(chatTxt, connection, tickerre_tup[1])
-                            pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf)
+                            logger.info('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
+                            pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
             # connection.close()
+            logger.debug("Deleting screenshot file")
             os.remove(newestfname)
+            logger.debug("Jiggling mouse for keepalive")
             pyautogui.moveTo(pyautogui.Point(x=900, y=90))
             pyautogui.move(5, -5)
         else:
-            print("Sentiment analysis not running outside market hours")
+            logger.info("Sentiment analysis not running outside market hours")
             time.sleep(3600)
 
-def coherencyCheck(phrase):
+def coherencyCheck(phrase, log):
     if len(phrase) < 9:
         return False
     for phrasew in phrase.split(' '):
         if len(phrasew) > 2:
             return True
+    log.info("discarding the following string of letters: {}".format(phrase))
     return False
 
 
