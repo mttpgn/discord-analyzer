@@ -14,7 +14,6 @@ import logging
 
 pyautogui.FAILSAFE = False
 
-
 def takeConfigs():
     if len(sys.argv) < 2:
         print("Provide the config file as the 1st CLI argument please.")
@@ -28,20 +27,22 @@ def takeConfigs():
     logging.debug("Loaded config file {}".format(conffile))
     return cf
 
-def main():
-    conf = takeConfigs()
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler(conf['ENVIRONMENT']['logfile'])
+def setUpLogging(configuration):
+    logsetup = logging.getLogger(__name__)
+    logsetup.setLevel(logging.DEBUG)
+    fh = logging.FileHandler(configuration['ENVIRONMENT']['logfile'])
     fh.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s %(message)s')
     fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    with open('{}/tickers.txt'.format(conf['ENVIRONMENT']['projroot'])) as tickers:
+    logsetup.addHandler(fh)
+    return logsetup
+
+def setupregex(configuration):
+    with open('{}/tickers.txt'.format(configuration['ENVIRONMENT']['projroot'])) as tickers:
         rawtickers = tickers.read().split('\n')
         regexfirstpart = '( |^|\$)'
         regexlastpart = '( |$|,|\.|!|\?)'
-        tickerregexes = \
+        tregexes = \
           [ (re.compile(\
               '{}{}{}'.format(\
                 regexfirstpart, \
@@ -49,10 +50,17 @@ def main():
                 regexlastpart), \
               flags=re.IGNORECASE), \
             t) for t in rawtickers if t != '' ]
+        return tregexes
+
+def main():
+    conf = takeConfigs()
+    logger = setUpLogging(conf)
+    tickerregexes = setupregex(conf)
     logger.info("Connecting to database")
     dbconnection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
     while True:
         currhr = datetime.now().hour
+        currmin = datetime.now().minute
         beginhr = int(conf['COMMON']['hour_begin'])
         endhr = int(conf['COMMON']['hour_finish'])
         everyhr = conf['COMMON']['all_hours_flag']
