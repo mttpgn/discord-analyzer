@@ -91,8 +91,7 @@ def main():
               lambda x : x in \
                 "QWERTYUIOPLKJHGFDSAZXCVBNM,.! qwertyuioplkjhgfdsazxcvbnm1234567890$%*&^", 
               line) ) ) for line in latestChats ]
-            else:
-                connection = dbconnection
+            connection = dbconnection
             while(connection is None):
                 try:
                     logger.warn("Not database connection found. Making new connection.")
