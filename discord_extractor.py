@@ -91,9 +91,6 @@ def main():
               lambda x : x in \
                 "QWERTYUIOPLKJHGFDSAZXCVBNM,.! qwertyuioplkjhgfdsazxcvbnm1234567890$%*&^", 
               line) ) ) for line in latestChats ]
-            #if currmin in (29, 59) and currsec < 20:
-            #    logger.info("Postgres session refresh scheduled for NOW")
-            #    connection.close()
             else:
                 connection = dbconnection
             while(connection is None):
