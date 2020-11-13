@@ -91,9 +91,9 @@ def main():
               lambda x : x in \
                 "QWERTYUIOPLKJHGFDSAZXCVBNM,.! qwertyuioplkjhgfdsazxcvbnm1234567890$%*&^", 
               line) ) ) for line in latestChats ]
-            if currmin in (29, 59) and currsec < 20:
-                logger.info("Postgres session refresh scheduled for NOW")
-                connection.close()
+            #if currmin in (29, 59) and currsec < 20:
+            #    logger.info("Postgres session refresh scheduled for NOW")
+            #    connection.close()
             else:
                 connection = dbconnection
             while(connection is None):
@@ -117,6 +117,7 @@ def main():
         else:
             logger.info("Sentiment analysis not running outside market hours")
             time.sleep(30)
+            dbconnection.close()
 
 def coherencyCheck(phrase, log):
     if len(phrase) < 9:
