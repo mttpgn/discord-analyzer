@@ -94,7 +94,7 @@ def main():
             connection = dbconnection
             while(connection is None):
                 try:
-                    logger.warn("Not database connection found. Making new connection.")
+                    logger.warn("No database connection found. Making new connection.")
                     connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
                 except Error as e:
                     logger.error("Failed to connect: {} ... retrying".format(e))
@@ -104,7 +104,12 @@ def main():
                     if coherencyCheck(chatTxt, logger):
                         if tickerre_tup[0].search(chatTxt) is not None:
                             logger.info('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
-                            pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                            try:
+                                pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                            except(psycopg2.InterfaceError):
+                                logger.error("Connection expired, attempting to resetablish")
+                                connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
+                                pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
             logger.debug("Deleting screenshot file")
             os.remove(newestfname)
             logger.debug("Jiggling mouse for keepalive")
