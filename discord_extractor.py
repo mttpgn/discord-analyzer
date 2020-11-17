@@ -41,9 +41,11 @@ def setUpLogging(configuration):
     return logsetup
 
 def getTickers(configuration):
-    r = requests.get(configuration['ENVIRONMENT']['tickerlisturl'])
-    rawtickers = r.text.split('\n')
-    return rawtickers
+    r1 = requests.get(configuration['DATA']['tickerlisturl'])
+    rawtickers = set(r1.text.split('\n'))
+    r2 = requests.get(configuration['DATA']['blacklisturl'])
+    blacklist = set(r2.text.split('\n'))
+    return list(rawtickers - blacklist)
 
 def setupregex(configuration):
     tickerlist = getTickers(configuration)
