@@ -53,6 +53,15 @@ def setupregex(configuration):
             t) for t in rawtickers if t != '' ]
         return tregexes
 
+def coherencyCheck(phrase, log):
+    if len(phrase) < 9:
+        return False
+    for phrasew in phrase.split(' '):
+        if len(phrasew) > 2:
+            return True
+    log.info("discarding the following string of letters: {}".format(phrase))
+    return False
+
 def main():
     conf = takeConfigs()
     logger = setUpLogging(conf)
@@ -119,15 +128,6 @@ def main():
             logger.info("Sentiment analysis not running outside market hours")
             time.sleep(30)
             dbconnection.close()
-
-def coherencyCheck(phrase, log):
-    if len(phrase) < 9:
-        return False
-    for phrasew in phrase.split(' '):
-        if len(phrasew) > 2:
-            return True
-    log.info("discarding the following string of letters: {}".format(phrase))
-    return False
 
 
 if __name__ == '__main__':
