@@ -13,6 +13,7 @@ import sys
 import logging
 import distutils.util
 import requests
+from psycopg2 import InterfaceError
 
 pyautogui.FAILSAFE = False
 
