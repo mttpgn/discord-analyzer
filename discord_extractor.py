@@ -40,15 +40,17 @@ def setUpLogging(configuration):
     logsetup.addHandler(fh)
     return logsetup
 
-def getTickers(configuration):
+def getTickers(configuration, log):
+    log.info("Pulling ticker list")
     r1 = requests.get(configuration['DATA']['tickerlisturl'])
     rawtickers = set(r1.text.split('\n'))
+    log.info("Pulling blacklist")
     r2 = requests.get(configuration['DATA']['blacklisturl'])
     blacklist = set(r2.text.split('\n'))
     return list(rawtickers - blacklist)
 
-def setupregex(configuration):
-    tickerlist = getTickers(configuration)
+def setupregex(configuration, log):
+    tickerlist = getTickers(configuration, log)
     regexfirstpart = '( |^|\$)'
     regexlastpart = '( |$|,|\.|!|\?)'
     tregexes = \
@@ -73,8 +75,8 @@ def coherencyCheck(phrase, log):
 def main():
     conf = takeConfigs()
     logger = setUpLogging(conf)
-    tickerregexes = setupregex(conf)
-    logger.info("Connecting to database")
+    tickerregexes = setupregex(conf, logger)
+    logger.info("Connecting to database initially")
     dbconnection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
     while True:
         currhr = datetime.now().hour
