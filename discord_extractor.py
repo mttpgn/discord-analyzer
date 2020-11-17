@@ -21,12 +21,12 @@ def takeConfigs():
         print("Provide the config file as the 1st CLI argument please.")
         exit()
     conffile = sys.argv[1]
-    if not os.path.exists(conffile):
-        print("Not a valid filepath: {}.".printf(conffile))
+    if not os.path.exists("cfgs/{}".format(conffile)):
+        print("Not a valid filepath: cfgs/{}.".printf(conffile))
         exit()
     cf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-    cf.read(conffile)
-    logging.debug("Loaded config file {}".format(conffile))
+    cf.read("cfgs/{}".format(conffile))
+    logging.debug("Loaded config file cfgs/{}".format(conffile))
     return cf
 
 def setUpLogging(configuration):
