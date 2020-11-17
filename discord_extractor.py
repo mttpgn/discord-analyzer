@@ -39,9 +39,13 @@ def setUpLogging(configuration):
     logsetup.addHandler(fh)
     return logsetup
 
-def setupregex(configuration):
+def getTickers(configuration):
     r = requests.get(configuration['ENVIRONMENT']['tickerlisturl'])
     rawtickers = r.text.split('\n')
+    return rawtickers
+
+def setupregex(configuration):
+    tickerlist = getTickers(configuration)
     regexfirstpart = '( |^|\$)'
     regexlastpart = '( |$|,|\.|!|\?)'
     tregexes = \
@@ -51,7 +55,7 @@ def setupregex(configuration):
             t, \
             regexlastpart), \
           flags=re.IGNORECASE), \
-        t) for t in rawtickers if t != '' ]
+        t) for t in tickerlist if t != '' ]
     return tregexes
 
 def coherencyCheck(phrase, log):
