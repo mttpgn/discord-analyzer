@@ -12,6 +12,7 @@ import pg_sentiment_db
 import sys
 import logging
 import distutils.util
+import requests
 
 pyautogui.FAILSAFE = False
 
@@ -39,19 +40,19 @@ def setUpLogging(configuration):
     return logsetup
 
 def setupregex(configuration):
-    with open('{}/tickers.txt'.format(configuration['ENVIRONMENT']['projroot'])) as tickers:
-        rawtickers = tickers.read().split('\n')
-        regexfirstpart = '( |^|\$)'
-        regexlastpart = '( |$|,|\.|!|\?)'
-        tregexes = \
-          [ (re.compile(\
-              '{}{}{}'.format(\
-                regexfirstpart, \
-                t, \
-                regexlastpart), \
-              flags=re.IGNORECASE), \
-            t) for t in rawtickers if t != '' ]
-        return tregexes
+    r = requests.get(configuration['ENVIRONMENT']['tickerlisturl'])
+    rawtickers = r.text.split('\n')
+    regexfirstpart = '( |^|\$)'
+    regexlastpart = '( |$|,|\.|!|\?)'
+    tregexes = \
+      [ (re.compile(\
+          '{}{}{}'.format(\
+            regexfirstpart, \
+            t, \
+            regexlastpart), \
+          flags=re.IGNORECASE), \
+        t) for t in rawtickers if t != '' ]
+    return tregexes
 
 def coherencyCheck(phrase, log):
     if len(phrase) < 9:
