@@ -1,0 +1,9 @@
+.DS_Store
+*.txt
+__pycache__
+__pycache__/*
+*.sqbpro
+sqlite_bkup
+sqlite_bkup/*
+*.sqlite
+*.log
