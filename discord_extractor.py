@@ -47,6 +47,7 @@ def getTickers(configuration, log):
         rawtickers = set(r1.text.split('\n'))
     else:
         log.error("Received {} status code.".format(r1.status_code))
+        raise Exception("Please check whether gist.github.com is accessible.")
     rawtickers = set(r1.text.split('\n'))
     log.info("Pulling blacklist")
     r2 = requests.get(configuration['DATA']['blacklisturl'])
@@ -54,6 +55,7 @@ def getTickers(configuration, log):
         blacklist = set(r2.text.split('\n'))
     else:
         log.error("Received {} status code.".format(r2.status_code))
+        raise Exception("Please check whether gist.github.com is accessible.")
     return list(rawtickers - blacklist)
 
 def setupregex(configuration, log):
