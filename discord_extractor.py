@@ -43,10 +43,17 @@ def setUpLogging(configuration):
 def getTickers(configuration, log):
     log.info("Pulling ticker list")
     r1 = requests.get(configuration['DATA']['tickerlisturl'])
+    if r1.status_code == 200:
+        rawtickers = set(r1.text.split('\n'))
+    else:
+        log.error("Received {} status code.".format(r1.status_code))
     rawtickers = set(r1.text.split('\n'))
     log.info("Pulling blacklist")
     r2 = requests.get(configuration['DATA']['blacklisturl'])
-    blacklist = set(r2.text.split('\n'))
+    if r2.status_code == 200:
+        blacklist = set(r2.text.split('\n'))
+    else:
+        log.error("Received {} status code.".format(r2.status_code))
     return list(rawtickers - blacklist)
 
 def setupregex(configuration, log):
