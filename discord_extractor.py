@@ -40,22 +40,22 @@ def setUpLogging(configuration):
     logsetup.addHandler(fh)
     return logsetup
 
-def getTickers(configuration, log):
-    log.info("Pulling ticker list")
-    r1 = requests.get(configuration['DATA']['tickerlisturl'])
-    if r1.status_code == 200:
-        rawtickers = set(r1.text.split('\n'))
+def gistPull(url):
+    r = requests.get(url)
+    if r.status_code == 200:
+        symbollist = set(r1.text.split('\n'))
     else:
         log.error("Received {} status code.".format(r1.status_code))
         raise Exception("Please check whether gist.github.com is accessible.")
-    rawtickers = set(r1.text.split('\n'))
-    log.info("Pulling blacklist")
-    r2 = requests.get(configuration['DATA']['blacklisturl'])
-    if r2.status_code == 200:
-        blacklist = set(r2.text.split('\n'))
-    else:
-        log.error("Received {} status code.".format(r2.status_code))
-        raise Exception("Please check whether gist.github.com is accessible.")
+    return symbollist
+
+def getTickers(configuration, log):
+    tickerListUrl = configuration['DATA']['tickerlisturl']
+    blacklisturl = configuration['DATA']['blacklisturl']
+    log.info("Pulling ticker list from {}".format(tickerListUrl))
+    rawtickers = set(gistPull(tickerlisturl)
+    log.info("Pulling blacklist from {}".format(blacklisturl))
+    blacklist = set(gistPull(blacklisturl))
     return list(rawtickers - blacklist)
 
 def setupregex(configuration, log):
