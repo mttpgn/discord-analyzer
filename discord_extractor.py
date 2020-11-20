@@ -17,15 +17,22 @@ from psycopg2 import InterfaceError
 
 pyautogui.FAILSAFE = False
 
+def understandconfigfile(word):
+    if '.ini' in word:
+        return word
+    else:
+        return word + '.ini'
+
 def takeConfigs():
     if len(sys.argv) < 2:
         print("Provide the config file as the 1st CLI argument please.")
         exit()
-    conffile = sys.argv[1]
+    conffile = understandconfigfile(sys.argv[1])
     if not os.path.exists("cfgs/{}".format(conffile)):
-        print("Not a valid filepath: cfgs/{}.".printf(conffile))
+        print("Not a valid filepath: cfgs/{}.".format(conffile))
         exit()
-    cf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+    cf = configparser.ConfigParser(\
+      interpolation=configparser.ExtendedInterpolation())
     cf.read("cfgs/{}".format(conffile))
     logging.debug("Loaded config file cfgs/{}".format(conffile))
     return cf
