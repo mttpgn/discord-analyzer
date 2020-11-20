@@ -55,9 +55,9 @@ def setUpLogging(configuration):
 def gistPull(url):
     r = requests.get(url)
     if r.status_code == 200:
-        symbollist = set(r1.text.split('\n'))
+        symbollist = set(r.text.split('\n'))
     else:
-        log.error("Received {} status code.".format(r1.status_code))
+        log.error("Received {} status code.".format(r.status_code))
         raise Exception("Please check whether gist.github.com is accessible.")
     return symbollist
 
