@@ -33,7 +33,12 @@ def takeConfigs():
 def setUpLogging(configuration):
     logsetup = logging.getLogger(__name__)
     logsetup.setLevel(logging.DEBUG)
-    fh = logging.FileHandler(configuration['ENVIRONMENT']['logfile'])
+    fh = logging.FileHandler(\
+      "{}/{}.{}.log".format(\
+        configuration['ENVIRONMENT']['projroot'],\
+        configuration['ENVIRONMENT']['logfile'], \
+        str(datetime.now()).split(' ')[0]\
+                           ))
     fh.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s %(message)s')
     fh.setFormatter(formatter)
@@ -80,6 +85,11 @@ def coherencyCheck(phrase, log):
             return True
     log.info("discarding the following string of letters: {}".format(phrase))
     return False
+
+def loop(configuration, log):
+    log.info("Sentiment analysis not running outside market hours")
+    time.sleep(300)
+    log = setUpLogging(configuration)
 
 def main():
     conf = takeConfigs()
@@ -144,9 +154,8 @@ def main():
             pyautogui.moveTo(pyautogui.Point(x=900, y=90))
             pyautogui.move(5, -5)
         else:
-            logger.info("Sentiment analysis not running outside market hours")
-            time.sleep(30)
             dbconnection.close()
+            loop(conf, logger)
 
 
 if __name__ == '__main__':
