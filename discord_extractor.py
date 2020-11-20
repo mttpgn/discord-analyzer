@@ -58,7 +58,7 @@ def getTickers(configuration, log):
     tickerListUrl = configuration['DATA']['tickerlisturl']
     blacklisturl = configuration['DATA']['blacklisturl']
     log.info("Pulling ticker list from {}".format(tickerListUrl))
-    rawtickers = set(gistPull(tickerlisturl)
+    rawtickers = set(gistPull(tickerlisturl))
     log.info("Pulling blacklist from {}".format(blacklisturl))
     blacklist = set(gistPull(blacklisturl))
     return list(rawtickers - blacklist)
