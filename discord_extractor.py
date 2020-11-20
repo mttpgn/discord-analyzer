@@ -62,9 +62,9 @@ def gistPull(url):
     return symbollist
 
 def getTickers(configuration, log):
-    tickerListUrl = configuration['DATA']['tickerlisturl']
+    tickerlisturl = configuration['DATA']['tickerlisturl']
     blacklisturl = configuration['DATA']['blacklisturl']
-    log.info("Pulling ticker list from {}".format(tickerListUrl))
+    log.info("Pulling ticker list from {}".format(tickerlisturl))
     rawtickers = set(gistPull(tickerlisturl))
     log.info("Pulling blacklist from {}".format(blacklisturl))
     blacklist = set(gistPull(blacklisturl))
