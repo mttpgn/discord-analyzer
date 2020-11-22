@@ -73,7 +73,7 @@ def getTickers(configuration, log):
 def setupregex(configuration, log):
     tickerlist = getTickers(configuration, log)
     regexfirstpart = '( |^|\$)'
-    regexlastpart = '( |$|,|\.|!|\?)'
+    regexlastpart = '( |$|,|\.|-|!|\?)'
     tregexes = \
       [ (re.compile(\
           '{}{}{}'.format(\
