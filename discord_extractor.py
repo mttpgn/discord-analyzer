@@ -151,7 +151,7 @@ def main():
                             logger.info('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
                             try:
                                 pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
-                            except(psycopg2.InterfaceError):
+                            except(InterfaceError):
                                 logger.error("Connection expired, attempting to resetablish")
                                 connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
                                 pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
