@@ -19,11 +19,13 @@ def connectToDatabase_pg(cfg, log):
 def insertChatData_pg(textData, cn, symbol, cfg, log):
     cursor = cn.cursor()
     selectQuery = """
+      BEGIN;
       SELECT 
         text 
       FROM {} 
       WHERE timestamp >= NOW() - INTERVAL '15 minutes'
       AND text='{}';
+      END;
                   """.format(cfg['CHANNEL']['pg_tableName'], textData)
     log.info(selectQuery)
     cursor.execute(selectQuery)
@@ -34,10 +36,12 @@ def insertChatData_pg(textData, cn, symbol, cfg, log):
         else:
             positivity = 'T'
         insertQuery = """
+          BEGIN;
           INSERT INTO {}
           (text, positive, timestamp, ticker_symbol, discord_server, discord_channel)
           VALUES
           ('{}', '{}', NOW(), '{}', '{}', '{}');
+          END;
                       """.format(
             cfg['CHANNEL']['pg_tableName'],
             textData.strip(),
