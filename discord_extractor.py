@@ -13,7 +13,7 @@ import sys
 import logging
 import distutils.util
 import requests
-from psycopg2 import InterfaceError
+from psycopg2 import InterfaceError, ProgrammingError
 
 pyautogui.FAILSAFE = False
 
@@ -154,7 +154,14 @@ def main():
                             except(InterfaceError):
                                 logger.error("Connection expired, attempting to resetablish")
                                 connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
-                                pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                                try:
+                                    pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                                except(ProgrammingError):
+                                    logger.warn("No data found from 5 minutes ago")
+                                    pg_sentiment_db.insertChatDataNoSelect_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                            except(ProgrammingError):
+                                logger.warn("No data found from 5 minutes ago")
+                                pg_sentiment_db.insertChatDataNoSelect_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
             logger.debug("Deleting screenshot file")
             os.remove(newestfname)
             logger.debug("Jiggling mouse for keepalive")

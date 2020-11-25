@@ -57,3 +57,29 @@ def insertChatData_pg(textData, cn, symbol, cfg, log):
     cn.commit()
     cursor.close()
 
+def insertChatDataNoSelect_pg(textData, cn, symbol, cfg, log):
+    if any(negativeStr in textData for negativeStr in negative_wordlist):
+        positivity = 'F'
+    else:
+        positivity = 'T'
+    cursor = cn.cursor()
+    insertQuery = """
+          BEGIN;
+          INSERT INTO {}
+          (text, positive, timestamp, ticker_symbol, discord_server, discord_channel)
+          VALUES
+          ('{}', '{}', NOW(), '{}', '{}', '{}');
+          END;
+                      """.format(
+        cfg['CHANNEL']['pg_tableName'],
+        textData.strip(),
+        positivity,
+        symbol,
+        cfg['CHANNEL']['discord_name'],
+        cfg['CHANNEL']['channel_name']
+                                )
+    log.info(insertQuery)
+    _ = cursor.execute(insertQuery)
+    cn.commit()
+    cursor.close()
+
