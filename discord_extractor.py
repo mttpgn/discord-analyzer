@@ -13,7 +13,7 @@ import sys
 import logging
 import distutils.util
 import requests
-from psycopg2 import InterfaceError, ProgrammingError
+from psycopg2 import DatabaseError, InterfaceError, ProgrammingError
 
 pyautogui.FAILSAFE = False
 
@@ -162,6 +162,10 @@ def main():
                             except(ProgrammingError):
                                 logger.warn("No data found from 5 minutes ago")
                                 pg_sentiment_db.insertChatDataNoSelect_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                            except(DatabaseError):
+                                connection.close()
+                                connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
+                                pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
             logger.debug("Deleting screenshot file")
             os.remove(newestfname)
             logger.debug("Jiggling mouse for keepalive")
