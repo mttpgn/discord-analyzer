@@ -57,8 +57,10 @@ def gistPull(url):
     if r.status_code == 200:
         symbollist = set(r.text.split('\n'))
     else:
-        log.error("Received {} status code.".format(r.status_code))
-        raise Exception("Please check whether gist.github.com is accessible.")
+        log.error(\
+            "Received {} status code.".format(r.status_code))
+        raise Exception(\
+            "Please check if gist.github.com is accessible.")
     return symbollist
 
 def getTickers(configuration, log):
@@ -90,7 +92,8 @@ def coherencyCheck(phrase, log):
     for phrasew in phrase.split(' '):
         if len(phrasew) > 2:
             return True
-    log.info("discarding the following string of letters: {}".format(phrase))
+    log.info("discarding the following string of letters: {}".format(\
+        phrase))
     return False
 
 def loop(configuration, log):
@@ -111,7 +114,8 @@ def main():
         beginhr = int(conf['COMMON']['hour_begin'])
         endhr = int(conf['COMMON']['hour_finish'])
         everyhr = distutils.util.strtobool(conf['COMMON']['all_hours_flag'])
-        logger.info("Checking whether current hour {} is in {} or the all hours flag ({}) is set.".format(
+        logger.info("Checking if current hour {} is in {} or the all-" + \
+         "hours flag ({}) is set.".format( \
           currhr, \
           str(list(range(beginhr, endhr))), \
           everyhr)  )
@@ -131,41 +135,84 @@ def main():
             logger.debug("Saved screenshot to {}".format(newestfname))
             img = Image.open(newestfname)
             latestChatsPre = tess.image_to_string(img).split('\n')
-            latestChats = [t for t in latestChatsPre if '(' not in t and ')' not in t]
+            latestChats = \
+              [t for t in latestChatsPre if '(' not in t and ')' not in t]
             latestChatsCleaned = [ "".join( list( filter(
               lambda x : x in \
-                "QWERTYUIOPLKJHGFDSAZXCVBNM,.! qwertyuioplkjhgfdsazxcvbnm1234567890$%*&^", 
+                "QWERTYUIOPLKJHGFDSAZXCVBNM,.! " + \
+                "qwertyuioplkjhgfdsazxcvbnm" + \
+                "1234567890$%*&^", 
               line) ) ) for line in latestChats ]
             connection = dbconnection
             while(connection is None):
                 try:
-                    logger.warn("No database connection found. Making new connection.")
-                    connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
+                    logger.warn("No database connection found. " + \
+                        "Making new connection.")
+                    connection = pg_sentiment_db.connectToDatabase_pg(\
+                        conf, logger)
                 except Error as e:
-                    logger.error("Failed to connect: {} ... retrying".format(e))
+                    logger.error(\
+                        "Failed to connect: {} ...retrying".format(\
+                        e))
                     time.sleep(0.1)
             for chatTxt in latestChatsCleaned:
                 for tickerre_tup in tickerregexes:
                     if coherencyCheck(chatTxt, logger):
                         if tickerre_tup[0].search(chatTxt) is not None:
-                            logger.info('REGEX of \'{}\' recognized msg "{}"'.format(tickerre_tup[0], chatTxt))
+                            logger.info('REGEX of \'{}\' recognized msg ' + \
+                             '"{}"'.format(tickerre_tup[0], chatTxt))
                             try:
-                                pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                                pg_sentiment_db.insertChatData_pg(
+                                    chatTxt, 
+                                    connection, 
+                                    tickerre_tup[1], 
+                                    conf, 
+                                    logger)
                             except(InterfaceError):
-                                logger.error("Connection expired, attempting to resetablish")
-                                connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
+                                logger.error(
+                                    "Connection expired, " + \
+                                    "attempting to resetablish")
+                                connection = \
+                                pg_sentiment_db.connectToDatabase_pg(
+                                    conf, 
+                                    logger)
                                 try:
-                                    pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                                    pg_sentiment_db.insertChatData_pg(
+                                        chatTxt, 
+                                        connection, 
+                                        tickerre_tup[1], 
+                                        conf, 
+                                        logger)
                                 except(ProgrammingError):
-                                    logger.warn("No data found from 5 minutes ago")
-                                    pg_sentiment_db.insertChatDataNoSelect_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                                    logger.warn(
+                                        "No data found from 5 minutes ago")
+                                    pg_sentiment_db.insertChatDataNoSelect_pg(
+                                        chatTxt, 
+                                        connection, 
+                                        tickerre_tup[1], 
+                                        conf, 
+                                        logger)
                             except(ProgrammingError):
-                                logger.warn("No data found from 5 minutes ago")
-                                pg_sentiment_db.insertChatDataNoSelect_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                                logger.warn(\
+                                    "No data found from 5 minutes ago")
+                                pg_sentiment_db.insertChatDataNoSelect_pg(
+                                    chatTxt, 
+                                    connection, 
+                                    tickerre_tup[1], 
+                                    conf, 
+                                    logger)
                             except(DatabaseError):
                                 connection.close()
-                                connection = pg_sentiment_db.connectToDatabase_pg(conf, logger)
-                                pg_sentiment_db.insertChatData_pg(chatTxt, connection, tickerre_tup[1], conf, logger)
+                                connection = \
+                                pg_sentiment_db.connectToDatabase_pg(
+                                    conf, 
+                                    logger)
+                                pg_sentiment_db.insertChatData_pg(
+                                    chatTxt, 
+                                    connection, 
+                                    tickerre_tup[1], 
+                                    conf, 
+                                    logger)
             logger.debug("Deleting screenshot file")
             os.remove(newestfname)
             logger.debug("Jiggling mouse for keepalive")
