@@ -87,7 +87,7 @@ def setupregex(configuration, log):
     return tregexes
 
 def coherencyCheck(phrase, log):
-    if len(phrase) < 9:
+    if len(phrase) < 5:
         return False
     for phrasew in phrase.split(' '):
         if len(phrasew) > 2:
