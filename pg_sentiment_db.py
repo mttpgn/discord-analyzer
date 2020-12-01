@@ -1,17 +1,15 @@
 import psycopg2
-import socket
 import logging
 from feelings_list import negative_wordlist
 
 def connectToDatabase_pg(cfg, log):
-    pg_db_IPaddress = socket.gethostbyname(cfg['POSTGRES_DATABASE']['pg_db_hostname'])
     conn = psycopg2.connect(
       port=cfg['POSTGRES_DATABASE']['pg_db_port'],
       dbname=cfg['POSTGRES_DATABASE']['pg_db_name'],
       user=cfg['POSTGRES_DATABASE']['pg_db_username'],
       password=cfg['POSTGRES_DATABASE']['pg_db_password'],
       host=pg_db_IPaddress
-      # host=pg_db_hostname
+      host=cfg['POSTGRES_DATABASE']['pg_db_hostname']
                            )
     log.info("Connection established. Postgres v. {}".format(conn.server_version))
     return conn
