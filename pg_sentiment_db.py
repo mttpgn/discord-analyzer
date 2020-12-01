@@ -8,9 +8,7 @@ def connectToDatabase_pg(cfg, log):
       dbname=cfg['POSTGRES_DATABASE']['pg_db_name'],
       user=cfg['POSTGRES_DATABASE']['pg_db_username'],
       password=cfg['POSTGRES_DATABASE']['pg_db_password'],
-      host=pg_db_IPaddress
-      host=cfg['POSTGRES_DATABASE']['pg_db_hostname']
-                           )
+      host=cfg['POSTGRES_DATABASE']['pg_db_hostname'])
     log.info("Connection established. Postgres v. {}".format(conn.server_version))
     return conn
 
