@@ -114,8 +114,8 @@ def main():
         beginhr = int(conf['COMMON']['hour_begin'])
         endhr = int(conf['COMMON']['hour_finish'])
         everyhr = distutils.util.strtobool(conf['COMMON']['all_hours_flag'])
-        logger.info("Checking if current hour {} is in {} or the all-" + \
-         "hours flag ({}) is set.".format( \
+        logger.info(("Checking if current hour {} is in {} or the all-" + \
+         "hours flag ({}) is set.").format( \
           currhr, \
           str(list(range(beginhr, endhr))), \
           everyhr)  )
@@ -159,8 +159,8 @@ def main():
                 for tickerre_tup in tickerregexes:
                     if coherencyCheck(chatTxt, logger):
                         if tickerre_tup[0].search(chatTxt) is not None:
-                            logger.info('REGEX of \'{}\' recognized msg ' + \
-                             '"{}"'.format(tickerre_tup[0], chatTxt))
+                            logger.info(('REGEX of \'{}\' recognized msg ' + \
+                             '"{}"').format(tickerre_tup[0], chatTxt))
                             try:
                                 pg_sentiment_db.insertChatData_pg(
                                     chatTxt, 
