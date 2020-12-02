@@ -8,7 +8,7 @@ import os
 import re
 import configparser
 from PIL import Image
-import pg_sentiment_db
+import src.pg_sentiment_db as pg_sentiment_db
 import sys
 import logging
 import distutils.util

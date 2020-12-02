@@ -1,6 +1,6 @@
 import psycopg2
 import logging
-from feelings_list import negative_wordlist
+from src.feelings_list import negative_wordlist
 
 def connectToDatabase_pg(cfg, log):
     conn = psycopg2.connect(
