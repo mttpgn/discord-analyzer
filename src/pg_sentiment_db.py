@@ -12,6 +12,22 @@ def connectToDatabase_pg(cfg, log):
     log.info("Connection established. Postgres v. {}".format(conn.server_version))
     return conn
 
+def selectChatData3minsBack(textData, cn, symbol, cfg, log):
+    cursor = cn.cursor()
+    cursor = cn.cursor()
+    selectQuery = """
+      BEGIN;
+      SELECT
+        text
+      FROM {}
+      WHERE timestamp >= NOW() - INTERVAL '3 minutes'
+      AND text='{}';
+      END;
+                  """.format(cfg['CHANNEL']['pg_tableName'], textData)
+    log.info(selectQuery)
+    recents = cursor.fetchall()
+
+
 def insertChatData_pg(textData, cn, symbol, cfg, log):
     cursor = cn.cursor()
     selectQuery = """

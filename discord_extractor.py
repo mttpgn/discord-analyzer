@@ -14,6 +14,7 @@ import logging
 import distutils.util
 import requests
 from psycopg2 import DatabaseError, InterfaceError, ProgrammingError
+from python-Levenshtein import distance
 
 pyautogui.FAILSAFE = False
 
