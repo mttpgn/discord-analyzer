@@ -96,7 +96,7 @@ def coherencyCheck(phrase, log):
         phrase))
     return False
 
-def loop(configuration, log):
+def noopLoop(configuration, log):
     log.info("Sentiment analysis not running outside market hours")
     time.sleep(300)
     log = setUpLogging(configuration)
@@ -220,7 +220,7 @@ def main():
             pyautogui.move(5, -5)
         else:
             dbconnection.close()
-            loop(conf, logger)
+            noopLoop(conf, logger)
 
 
 if __name__ == '__main__':
