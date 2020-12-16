@@ -37,6 +37,7 @@ def selectChatData3minsBack(textData, cn, symbol, cfg, log):
                   """.format(cfg['CHANNEL']['pg_tableName'], textData)
     log.info(selectQuery)
     recents = cursor.fetchall()
+    return recents
 
 
 def insertChatData_pg(textData, cn, symbol, cfg, log):
