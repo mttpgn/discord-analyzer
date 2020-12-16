@@ -200,7 +200,7 @@ def main():
                              '"{}"').format(tickerre_tup[0], chatTxt))
                             matchFound = False
                             k = 0
-                            while ((not matchFound) and (k < len(existingMsgs)):
+                            while ((not matchFound) and (k < len(existingMsgs))):
                                 n = existingMsgs[k]
                                 matchFound |= distance(chatTxt, n) < (1 - 0.682) * min(len(chatTxt), len(n))
                                 k += 1
