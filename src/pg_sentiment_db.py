@@ -26,7 +26,6 @@ def connectToDatabase_pg(cfg, log):
 
 def selectChatData3minsBack(textData, cn, symbol, cfg, log):
     cursor = cn.cursor()
-    cursor = cn.cursor()
     selectQuery = """
       BEGIN;
       SELECT
