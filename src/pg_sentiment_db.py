@@ -1,15 +1,27 @@
 import psycopg2
 import logging
+import socket
 from src.feelings_list import negative_wordlist
 
 def connectToDatabase_pg(cfg, log):
-    conn = psycopg2.connect(
-      port=cfg['POSTGRES_DATABASE']['pg_db_port'],
-      dbname=cfg['POSTGRES_DATABASE']['pg_db_name'],
-      user=cfg['POSTGRES_DATABASE']['pg_db_username'],
-      password=cfg['POSTGRES_DATABASE']['pg_db_password'],
-      host=cfg['POSTGRES_DATABASE']['pg_db_hostname'])
-    log.info("Connection established. Postgres v. {}".format(conn.server_version))
+    try:
+        conn = psycopg2.connect(
+          port=cfg['POSTGRES_DATABASE']['pg_db_port'],
+          dbname=cfg['POSTGRES_DATABASE']['pg_db_name'],
+          user=cfg['POSTGRES_DATABASE']['pg_db_username'],
+          password=cfg['POSTGRES_DATABASE']['pg_db_password'],
+          host=cfg['POSTGRES_DATABASE']['pg_db_hostname'])
+        log.info("Connection established. Postgres v. {}".format(conn.server_version))
+    except(psycopg2.OperationalError):
+        log.error("Failed once to resolve the DB hostname. Retrying.")
+        pg_db_IPaddress = socket.gethostbyname(cfg['POSTGRES_DATABASE']['pg_db_hostname'])
+        conn = psycopg2.connect(
+          port=cfg['POSTGRES_DATABASE']['pg_db_port'],
+          dbname=cfg['POSTGRES_DATABASE']['pg_db_name'],
+          user=cfg['POSTGRES_DATABASE']['pg_db_username'],
+          password=cfg['POSTGRES_DATABASE']['pg_db_password'],
+          host=pg_db_IPaddress)
+        log.info("Connection established. Postgres v. {}".format(conn.server_version))
     return conn
 
 def selectChatData3minsBack(textData, cn, symbol, cfg, log):
