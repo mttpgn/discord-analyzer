@@ -204,7 +204,7 @@ def main():
                                 n = existingMsgs[k]
                                 matchFound |= distance(chatTxt, n) < (1 - 0.682) * min(len(chatTxt), len(n))
                                 k += 1
-                            if matchFound:
+                            if not matchFound:
                                 pg_sentiment_db.insertChatDataNoSelect_pg(
                                   chatTxt,
                                   connection,
