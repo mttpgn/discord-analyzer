@@ -24,62 +24,21 @@ def connectToDatabase_pg(cfg, log):
         log.info("Connection established. Postgres v. {}".format(conn.server_version))
     return conn
 
-def selectChatData3minsBack(textData, cn, symbol, cfg, log):
+def selectChatDataMinsBack(cn, cfg, log):
     cursor = cn.cursor()
     selectQuery = """
-      BEGIN;
       SELECT
         text
       FROM {}
-      WHERE timestamp >= NOW() - INTERVAL '3 minutes'
-      AND text='{}';
-      END;
-                  """.format(cfg['CHANNEL']['pg_tableName'], textData)
+      WHERE timestamp >= NOW() - INTERVAL '{} minutes';
+                  """.format(
+        cfg['CHANNEL']['pg_tableName'],
+        cfg['CHANNEL']['dup_chk_window'])
     log.info(selectQuery)
     recents = cursor.fetchall()
-    return recents
-
-
-def insertChatData_pg(textData, cn, symbol, cfg, log):
-    cursor = cn.cursor()
-    selectQuery = """
-      BEGIN;
-      SELECT 
-        text 
-      FROM {} 
-      WHERE timestamp >= NOW() - INTERVAL '15 minutes'
-      AND text='{}';
-      END;
-                  """.format(cfg['CHANNEL']['pg_tableName'], textData)
-    log.info(selectQuery)
-    cursor.execute(selectQuery)
-    _ = cursor.fetchone()
-    if cursor.rowcount < 1:
-        if any(negativeStr in textData for negativeStr in negative_wordlist):
-            positivity = 'F'
-        else:
-            positivity = 'T'
-        insertQuery = """
-          BEGIN;
-          INSERT INTO {}
-          (text, positive, timestamp, ticker_symbol, discord_server, discord_channel)
-          VALUES
-          ('{}', '{}', NOW(), '{}', '{}', '{}');
-          END;
-                      """.format(
-            cfg['CHANNEL']['pg_tableName'],
-            textData.strip(),
-            positivity,
-            symbol,
-            cfg['CHANNEL']['discord_name'],
-            cfg['CHANNEL']['channel_name']
-                                )
-        log.info(insertQuery)
-        _ = cursor.execute(insertQuery)
-    else:
-        log.info("We already stored this msg")
-    cn.commit()
+    msgs = [r[0].strip() for r in recents]
     cursor.close()
+    return recents
 
 def insertChatDataNoSelect_pg(textData, cn, symbol, cfg, log):
     if any(negativeStr in textData for negativeStr in negative_wordlist):

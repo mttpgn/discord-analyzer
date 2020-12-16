@@ -143,7 +143,7 @@ def main():
                 "QWERTYUIOPLKJHGFDSAZXCVBNM,.! " + \
                 "qwertyuioplkjhgfdsazxcvbnm" + \
                 "1234567890$%*&^", 
-              line) ) ) for line in latestChats ]
+              line.strip()) ) ) for line in latestChats ]
             connection = dbconnection
             while(connection is None):
                 try:
@@ -153,67 +153,64 @@ def main():
                         conf, logger)
                 except Error as e:
                     logger.error(\
-                        "Failed to connect: {} ...retrying".format(\
+                        "Failed to connect: {} ...retrying after 0.1 seconds".format(\
                         e))
                     time.sleep(0.1)
+            try:
+                existingMsgs = pg_sentiment_db.selectChatDataMinsBack(
+                    connection,
+                    conf,
+                    logger)
+            except(InterfaceError):
+                logger.error(
+                    "Connection expired, " + \
+                    "attempting to resetablish")
+                connection = \
+                pg_sentiment_db.connectToDatabase_pg(
+                    conf,
+                    logger)
+                try:
+                    existingMsgs = pg_sentiment_db.selectChatDataMinsBack(
+                        connection,
+                        conf,
+                        logger)
+                except(ProgrammingError):
+                    logger.warn(
+                        "No data found from minutes ago")
+                    existingMsgs = []
+            except(ProgrammingError):
+                logger.warn(\
+                    "No data found from minutes ago")
+                existingMsgs = []
+            except(DatabaseError):
+                connection.close()
+                connection = \
+                pg_sentiment_db.connectToDatabase_pg(
+                    conf,
+                    logger)
+                existingMsgs = pg_sentiment_db.selectChatDataMinsBack(
+                    connection,
+                    conf,
+                    logger)
             for chatTxt in latestChatsCleaned:
                 for tickerre_tup in tickerregexes:
                     if coherencyCheck(chatTxt, logger):
-                        if tickerre_tup[0].search(chatTxt) is not None:
+                        if tickerre_tup[0].search(chatTxt) is not None: # Ticker found
                             logger.info(('REGEX of \'{}\' recognized msg ' + \
                              '"{}"').format(tickerre_tup[0], chatTxt))
-                            try:
-                                pg_sentiment_db.insertChatData_pg(
-                                    chatTxt, 
-                                    connection, 
-                                    tickerre_tup[1], 
-                                    conf, 
-                                    logger)
-                            except(InterfaceError):
-                                logger.error(
-                                    "Connection expired, " + \
-                                    "attempting to resetablish")
-                                connection = \
-                                pg_sentiment_db.connectToDatabase_pg(
-                                    conf, 
-                                    logger)
-                                try:
-                                    pg_sentiment_db.insertChatData_pg(
-                                        chatTxt, 
-                                        connection, 
-                                        tickerre_tup[1], 
-                                        conf, 
-                                        logger)
-                                except(ProgrammingError):
-                                    logger.warn(
-                                        "No data found from 5 minutes ago")
-                                    pg_sentiment_db.insertChatDataNoSelect_pg(
-                                        chatTxt, 
-                                        connection, 
-                                        tickerre_tup[1], 
-                                        conf, 
-                                        logger)
-                            except(ProgrammingError):
-                                logger.warn(\
-                                    "No data found from 5 minutes ago")
+                            matchFound = False
+                            k = 0
+                            while ((not matchFound) and (k < len(existingMsgs)):
+                                n = existingMsgs[k]
+                                matchFound |= distance(chatTxt, n) < (1 - 0.682) * min(len(chatTxt), len(n))
+                                k += 1
+                            if matchFound:
                                 pg_sentiment_db.insertChatDataNoSelect_pg(
-                                    chatTxt, 
-                                    connection, 
-                                    tickerre_tup[1], 
-                                    conf, 
-                                    logger)
-                            except(DatabaseError):
-                                connection.close()
-                                connection = \
-                                pg_sentiment_db.connectToDatabase_pg(
-                                    conf, 
-                                    logger)
-                                pg_sentiment_db.insertChatData_pg(
-                                    chatTxt, 
-                                    connection, 
-                                    tickerre_tup[1], 
-                                    conf, 
-                                    logger)
+                                  chatTxt,
+                                  connection,
+                                  tickerre_tup[1],
+                                  conf,
+                                  logger)
             logger.debug("Deleting screenshot file")
             os.remove(newestfname)
             logger.debug("Jiggling mouse for keepalive")
