@@ -8,3 +8,4 @@ sqlite_bkup
 sqlite_bkup/*
 *.sqlite
 *.log
+screenshots/*.png
