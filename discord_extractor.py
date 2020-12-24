@@ -15,6 +15,7 @@ import distutils.util
 import requests
 from psycopg2 import DatabaseError, InterfaceError, ProgrammingError
 from Levenshtein import distance
+from src.clearlogs import clearlogs
 
 pyautogui.FAILSAFE = False
 
@@ -218,6 +219,7 @@ def main():
             pyautogui.move(5, -5)
         else:
             dbconnection.close()
+            clearlogs(conf)
             noopLoop(conf, logger)
 
 

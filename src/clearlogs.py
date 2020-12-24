@@ -25,21 +25,16 @@ def takeConfigs():
     cf.read("cfgs/{}".format(conffile))
     return cf
 
-def clearlogs():
+def clearlogs(cf):
     previousBusinessDay = datetime.datetime.today()
     shift = datetime.timedelta(max(1,(previousBusinessDay.weekday() + 6) % 7 - 3))
     previousBusinessDay = previousBusinessDay - shift
     currentBusinessDay = datetime.datetime.today()
-    conf = takeConfigs()
-    logdir = "{}/log/".format(conf['ENVIRONMENT']['projroot'])
+    logdir = "{}/log/".format(cf['ENVIRONMENT']['projroot'])
     today = str(currentBusinessDay).split(' ')[0]
     yday = str(previousBusinessDay).split(' ')[0]
-    ls = subprocess.Popen(["cd", logdir, "&&", "ls"], stdout=subprocess.PIPE)
-    grep = subprocess.Popen(["grep", "-E", "-v", "\"{}|{}\"".format(today, yday)], stdin=ls.stdout, stdout=subprocess.PIPE)
-    rm = subprocess.Popen(["xargs", "rm", "-f", "-v", "&&", "cd", "-"], stdin=grep.stdout, stdout=subprocess.PIPE)
-    eop = rm.stdout
-    for l in eop:
-        print(l)
+    _ = subprocess.getoutput("cd {} && ls | grep -E -v \"{}|{}\" | xargs rm -f -v && cd - 1>/dev/null".format(logdir, today, yday))
 
 if __name__ == '__main__':
-    clearlogs()
+    conf = takeConfigs()
+    clearlogs(conf)
