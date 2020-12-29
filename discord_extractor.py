@@ -215,7 +215,7 @@ def main():
             logger.debug("Deleting screenshot file")
             os.remove(newestfname)
             logger.debug("Jiggling mouse for keepalive")
-            pyautogui.moveTo(pyautogui.Point(x=900, y=90))
+            pyautogui.moveTo(pyautogui.Point(x=conf['DESKTOP']['x_home'], y=conf['DESKTOP']['y_home']))
             pyautogui.move(5, -5)
         else:
             dbconnection.close()
