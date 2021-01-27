@@ -1,6 +1,7 @@
 import psycopg2
 import logging
 import socket
+import time
 from src.feelings_list import negative_wordlist
 
 def connectToDatabase_pg(cfg, log):
@@ -13,6 +14,7 @@ def connectToDatabase_pg(cfg, log):
           host=cfg['POSTGRES_DATABASE']['pg_db_hostname'])
         log.info("Connection established. Postgres v. {}".format(conn.server_version))
     except(psycopg2.OperationalError):
+        time.sleep(15)
         log.error("Failed once to resolve the DB hostname. Retrying.")
         pg_db_IPaddress = socket.gethostbyname(cfg['POSTGRES_DATABASE']['pg_db_hostname'])
         conn = psycopg2.connect(
