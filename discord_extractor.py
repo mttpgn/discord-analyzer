@@ -30,6 +30,9 @@ def takeConfigs():
         print("Provide the config file as the 1st CLI argument please.")
         exit()
     conffile = understandconfigfile(sys.argv[1])
+    if conffile[:5] == 'cfgs/':
+        conffile = conffile[5:]
+    understandconfigfile(sys.argv[1])
     if not os.path.exists("cfgs/{}".format(conffile)):
         print("Not a valid filepath: cfgs/{}.".format(conffile))
         exit()
