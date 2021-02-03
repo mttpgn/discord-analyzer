@@ -50,5 +50,14 @@ negative_wordlist = [
   'DIVE',
   'diving',
   'Diving',
-  'DIVING'
+  'DIVING',
+  'SELL',
+  'Sell',
+  'sell',
+  'overbought',
+  'OVERBOUGHT'
+  'over-bought',
+  'OVER-BOUGHT',
+  'collapse',
+  'COLLAPSE'
 ]
