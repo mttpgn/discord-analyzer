@@ -97,7 +97,7 @@ def coherencyCheck(phrase, log):
     for phrasew in phrase.split(' '):
         if len(phrasew) > 2:
             return True
-    log.info("discarding the following string of letters: {}".format(\
+    log.debug("discarding the following string of letters: {}".format(\
         phrase))
     return False
 
