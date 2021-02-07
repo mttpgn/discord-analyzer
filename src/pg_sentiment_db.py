@@ -32,7 +32,7 @@ def selectChatDataMinsBack(cn, cfg, log):
       SELECT
         text
       FROM {}
-      WHERE timestamp >= NOW() - INTERVAL '{} minutes';
+      WHERE "timestamp" > (NOW() - INTERVAL '{} minutes');
                   """.format(
         cfg['CHANNEL']['pg_tableName'],
         cfg['CHANNEL']['dup_chk_window'])
