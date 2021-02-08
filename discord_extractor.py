@@ -165,7 +165,8 @@ def main():
                     connection,
                     conf,
                     logger)
-            except(InterfaceError):
+            except(InterfaceError) as interfaceEx:
+                logger.error("{}".format(interfaceEx))
                 logger.error(
                     "Connection expired, " + \
                     "attempting to resetablish")
@@ -178,15 +179,18 @@ def main():
                         connection,
                         conf,
                         logger)
-                except(ProgrammingError):
+                except(ProgrammingError) as progEx:
+                    logger.error("{}".format(progEx))
                     logger.warn(
                         "No data found from minutes ago")
                     existingMsgs = []
-            except(ProgrammingError):
+            except(ProgrammingError) as progEx2:
+                logger.error("{}".format(progEx2))
                 logger.warn(\
                     "No data found from minutes ago")
                 existingMsgs = []
-            except(DatabaseError):
+            except(DatabaseError) as dEx:
+                logger.error("{}".format(dEx))
                 connection.close()
                 connection = \
                 pg_sentiment_db.connectToDatabase_pg(
