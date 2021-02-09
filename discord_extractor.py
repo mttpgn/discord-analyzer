@@ -210,7 +210,7 @@ def main():
                             matchFound = False
                             k = 0
                             while ((not matchFound) and (k < len(existingMsgs))):
-                                n = existingMsgs[k]
+                                n = existingMsgs[k][0]
                                 ldist = distance(chatTxt, n)
                                 matchFound |= (ldist < (stddev * min(len(chatTxt), len(n))))
                                 k += 1
