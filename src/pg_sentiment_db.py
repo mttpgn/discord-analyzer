@@ -37,6 +37,7 @@ def selectChatDataMinsBack(cn, cfg, log):
         cfg['CHANNEL']['pg_tableName'],
         cfg['CHANNEL']['dup_chk_window'])
     log.info(selectQuery)
+    cursor.execute(selectQuery)
     recents = cursor.fetchall()
     msgs = [r[0].strip() for r in recents]
     cursor.close()
