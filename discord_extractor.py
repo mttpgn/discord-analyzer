@@ -98,8 +98,6 @@ def coherencyCheck(phrase, log):
     for phrasew in phrase.split(' '):
         if len(phrasew) > 2:
             return True
-    log.debug("discarding the following string of letters: {}".format(\
-        phrase))
     return False
 
 def noopLoop(configuration, log):
