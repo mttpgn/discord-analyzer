@@ -148,7 +148,7 @@ def main():
                 "QWERTYUIOPLKJHGFDSAZXCVBNM,.! " + \
                 "qwertyuioplkjhgfdsazxcvbnm" + \
                 "1234567890$%*&^", 
-              line.strip()) ) ) for line in latestChats ]
+              line) ) ).strip() for line in latestChats ]
             connection = dbconnection
             while(connection is None):
                 try:
