@@ -18,6 +18,7 @@ from Levenshtein import distance
 from src.clearlogs import clearlogs
 
 pyautogui.FAILSAFE = False
+stddev = 1 - 0.682
 
 def understandconfigfile(word):
     if '.ini' in word:
@@ -210,7 +211,8 @@ def main():
                             k = 0
                             while ((not matchFound) and (k < len(existingMsgs))):
                                 n = existingMsgs[k]
-                                matchFound |= distance(chatTxt, n) < (1 - 0.682) * min(len(chatTxt), len(n))
+                                ldist = distance(chatTxt, n)
+                                matchFound |= (ldist < (stddev * min(len(chatTxt), len(n))))
                                 k += 1
                             if not matchFound:
                                 pg_sentiment_db.insertChatDataNoSelect_pg(
