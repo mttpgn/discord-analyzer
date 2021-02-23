@@ -29,10 +29,7 @@ def connectToDatabase_pg(cfg, log):
 def selectChatDataMinsBack(cn, cfg, log):
     cursor = cn.cursor()
     selectQuery = """
-      SELECT
-        text
-      FROM {}
-      WHERE "timestamp" > (NOW() - INTERVAL '{} minutes');
+      SELECT text FROM {} WHERE "timestamp" > (NOW() - INTERVAL '{} minutes');
                   """.format(
         cfg['CHANNEL']['pg_tableName'],
         cfg['CHANNEL']['dup_chk_window'])
