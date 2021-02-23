@@ -38,6 +38,7 @@ def selectChatDataMinsBack(cn, cfg, log):
     recents = cursor.fetchall()
     msgs = [r[0].strip() for r in recents]
     cursor.close()
+    log.info(f"Within select func, returning {len(recents)} recents.")
     return recents
 
 def insertChatDataNoSelect_pg(textData, cn, symbol, cfg, log):

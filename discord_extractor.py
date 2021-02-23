@@ -199,6 +199,7 @@ def main():
                     connection,
                     conf,
                     logger)
+            logger.info(f"Found {len(existingMsgs)} total recent messages.")
             for chatTxt in latestChatsCleaned:
                 for tickerre_tup in tickerregexes:
                     if coherencyCheck(chatTxt, logger):
