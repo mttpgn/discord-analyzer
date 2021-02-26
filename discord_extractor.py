@@ -200,13 +200,13 @@ def main():
                     conf,
                     logger)
             logger.info(f"Found {len(existingMsgs)} total recent messages.")
-            for chatTxt in latestChatsCleaned:
-                for tickerre_tup in tickerregexes:
-                    if coherencyCheck(chatTxt, logger):
+            for chatTxt in latestChatsCleaned: # for every sentence detected in the image
+                for tickerre_tup in tickerregexes: # for all ticker symbols
+                    if coherencyCheck(chatTxt, logger): # proceed for non-garbage
                         if tickerre_tup[0].search(chatTxt) is not None: # Ticker found
                             logger.info(('REGEX of \'{}\' recognized msg ' + \
                              '"{}"').format(tickerre_tup[0], chatTxt))
-                            matchFound = False
+                            matchFound = False # it's good if a match isn't found
                             k = 0
                             while ((not matchFound) and (k < len(existingMsgs))):
                                 n = existingMsgs[k][0]
