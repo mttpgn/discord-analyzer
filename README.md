@@ -231,13 +231,13 @@ For Discord, some (optional) optimizing customizations in the Settings:
 For each chat channel you wish to monitor, set up one table as follows:
 
 ```sql
-CREATE TABLE public.mychannel
+CREATE TABLE public.messages
 (
     id serial NOT NULL,
     word character(25) COLLATE pg_catalog."default" NOT NULL,
     msg_text character(999) COLLATE pg_catalog."default" NOT NULL,
     msg_timestamp timestamp without time zone,
-    CONSTRAINT mychannel_so_pkey PRIMARY KEY (id)
+    CONSTRAINT messages_so_pkey PRIMARY KEY (id)
 );
 ```
 
@@ -295,8 +295,9 @@ Create a section header `[POSTGRES_DATABASE]` above these fields:
 Create a section header `[CHANNEL]` above these fields:
 
 #### `pg_tableName`
-*Text*. Each channel being monitored will correspond to one table within a 
-single database shared across all records.
+*Text*. Multiple channels can share one large table within a
+single database, since their structure will be similar. The
+sample SQL here assumes one called `messages`.
 
 #### `discord_name`
 *Text*. The name of the discord server.
@@ -435,11 +436,11 @@ You can modify the query below to view the most popular words discussed
 during any period of time you specify.
 
 ```sql
--- See the most popular words of this week                                                                    
+-- See the most popular words of this week
 select 
     word, 
     count(word)
-from mychannel 
+from messages
 where msg_timestamp > (
     now() - interval '1' week
 )

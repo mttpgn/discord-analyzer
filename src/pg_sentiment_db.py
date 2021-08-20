@@ -2,7 +2,6 @@ import psycopg2
 import logging
 import socket
 import time
-from src.feelings_list import negative_wordlist
 
 def connectToDatabase_pg(cfg, log):
     try:
@@ -29,7 +28,7 @@ def connectToDatabase_pg(cfg, log):
 def selectChatDataMinsBack(cn, cfg, log):
     cursor = cn.cursor()
     selectQuery = """
-      SELECT text FROM {} WHERE "timestamp" > (NOW() - INTERVAL '{} minutes');
+      SELECT msg_text FROM {} WHERE msg_timestamp > (NOW() - INTERVAL '{} minutes');
                   """.format(
         cfg['CHANNEL']['pg_tableName'],
         cfg['CHANNEL']['dup_chk_window'])
@@ -42,22 +41,17 @@ def selectChatDataMinsBack(cn, cfg, log):
     return recents
 
 def insertChatDataNoSelect_pg(textData, cn, symbol, cfg, log):
-    if any(negativeStr in textData for negativeStr in negative_wordlist):
-        positivity = 'F'
-    else:
-        positivity = 'T'
     cursor = cn.cursor()
     insertQuery = """
           BEGIN;
           INSERT INTO {}
-          (text, positive, timestamp, ticker_symbol, discord_server, discord_channel)
+          (msg_text, msg_timestamp, word, discord_server, discord_channel)
           VALUES
-          ('{}', '{}', NOW(), '{}', '{}', '{}');
+          ('{}', NOW(), '{}', '{}', '{}');
           END;
                       """.format(
         cfg['CHANNEL']['pg_tableName'],
         textData.strip(),
-        positivity,
         symbol,
         cfg['CHANNEL']['discord_name'],
         cfg['CHANNEL']['channel_name']
